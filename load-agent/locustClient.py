@@ -22,15 +22,15 @@ READ_TIMEOUT_SECONDS = 120  # stdout feedback
 ERRORS_BEFORE_RESTART = 10
 # How long to wait for verified = true state
 VERIFIED_TIMEOUT_SECONDS = int(os.getenv("VERIFIED_TIMEOUT_SECONDS", 20))
-START_PORT = json.loads(os.getenv("START_PORT"))
-END_PORT = json.loads(os.getenv("END_PORT"))
+START_PORT = json.loads(os.getenv("START_PORT", "1000"))
+END_PORT = json.loads(os.getenv("END_PORT", "1059"))
 # Message to send mediator, defaults to "ping"
 MESSAGE_TO_SEND = os.getenv("MESSAGE_TO_SEND", "ping")
 
 ISSUER_TYPE = os.getenv("ISSUER_TYPE", "acapy")
 VERIFIER_TYPE = os.getenv("VERIFIER_TYPE", "acapy")
 
-RAW_OOB_BOOL = os.getenv("OOB_INVITE")
+RAW_OOB_BOOL = os.getenv("OOB_INVITE", "False")
 if RAW_OOB_BOOL == "False":
     # Handles case when string False passed in (AKA accidentally evals to True)
     OOB_INVITE = False
@@ -145,7 +145,7 @@ class CustomClient:
             # Create the wallet for the first time
             self.agentConfig = self.readjsonline()["result"]
             # self.agentConfig = self.agent.stdout.readline()
-
+            print("AgentConfig", self.agentConfig)
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None:
                 raise Exception("unable to start")
@@ -279,11 +279,12 @@ class CustomClient:
                 self.run_command({"cmd": "receiveInvitationConnectionDid", "invitationUrl": invite})
             else:
                 self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
-        except Exception:
+        except Exception as e:
+            print("locustClient.py 283 --->", e)
             self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
-
+        print("accept invite --->", line)
         return line["connection"]
 
     @stopwatch
@@ -291,9 +292,8 @@ class CustomClient:
         self.run_command({"cmd": "receiveCredential"})
 
         r = self.issuer.issue_credential(connection_id)
-
         line = self.readjsonline()
-
+        print("receive_credential -->", r)
         return r
 
     @stopwatch
@@ -305,7 +305,7 @@ class CustomClient:
         self.run_command({"cmd": "presentationExchange"})
 
         pres_ex_id = self.verifier.request_verification(connection_id)
-
+        print("pres_ex_id --->", pres_ex_id)
         line = self.readjsonline()
         
         self.verifier.verify_verification(pres_ex_id)

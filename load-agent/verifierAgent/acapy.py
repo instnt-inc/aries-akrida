@@ -42,7 +42,6 @@ class AcapyVerifier(BaseVerifier):
                                 raise Exception(r.content)
 
                 r = r.json()
-
                 # If OOB, need to grab connection_id
                 if out_of_band:
                         invitation_msg_id = r['invi_msg_id']
@@ -53,8 +52,7 @@ class AcapyVerifier(BaseVerifier):
                         )
                         # Returns only one
                         connection_id = g.json()['results'][0]['connection_id']
-                        r['connection_id'] = connection_id 
-                
+                        r['connection_id'] = connection_id
                 return {
                         'invitation_url': r['invitation_url'], 
                         'connection_id': r['connection_id']
@@ -103,7 +101,9 @@ class AcapyVerifier(BaseVerifier):
                         },
                         headers=headers,
                 )
-
+                print("VerifierAgent_create_connectionless_request) request body -->", r.request.body)
+                print("VerifierAgent_create_connectionless_request() status code -->", r.status_code)
+                print("VerifierAgent_create_connectionless_request() response body -->", r.json())
                 try:
                         if r.status_code != 200:
                                 raise Exception("Request was not successful: ", r.content)
@@ -146,7 +146,9 @@ class AcapyVerifier(BaseVerifier):
                         },
                         headers=headers,
                 )
-
+                print("VerifierAgent_request_verification() request body -->", r.request.body)
+                print("VerifierAgent_request_verification() status code -->", r.status_code)
+                print("VerifierAgent_request_verification() response body -->", r.json())
                 try:
                         if r.status_code != 200:
                                 raise Exception("Request was not successful: ", r.content)
@@ -162,7 +164,7 @@ class AcapyVerifier(BaseVerifier):
         def verify_verification(self, presentation_exchange_id):
                 headers = json.loads(os.getenv("VERIFIER_HEADERS"))  # headers same
                 headers["Content-Type"] = "application/json"
-                
+                print("VerifierAgent_verify_verification() presentation_exchange_id --> ", presentation_exchange_id)
                 # Want to do a for loop
                 iteration = 0
                 try:
@@ -179,7 +181,6 @@ class AcapyVerifier(BaseVerifier):
                                         break
                                 iteration += 1
                                 time.sleep(1)
-
                         if g.json()["verified"] != "true":
                                 raise AssertionError(
                                         f"Presentation was not successfully verified. Presentation in state {g.json()['state']}"

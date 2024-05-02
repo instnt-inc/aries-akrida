@@ -31,9 +31,10 @@ class UserBehaviour(SequentialTaskSet):
     @task
     def accept_invite(self):
         self.client.ensure_is_running()
-
+        print("invitation url",self.invite['invitation_url'])
         connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
+        print("accept_invite connection ---> ", connection)
 
     @task
     def receive_credential(self):

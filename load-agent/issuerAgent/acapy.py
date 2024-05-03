@@ -101,7 +101,7 @@ class AcapyIssuer(BaseIssuer):
         )
         print("Issue Credential request body -->", r.request.body)
         print("Issue Credential status code -->", r.status_code)
-        print("Issue Credential response body -->", r.json())
+        # print("Issue Credential response body -->", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
 

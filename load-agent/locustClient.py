@@ -308,7 +308,9 @@ class CustomClient:
         print("pres_ex_id --->", pres_ex_id)
         line = self.readjsonline()
         
-        self.verifier.verify_verification(pres_ex_id)
+        result = self.verifier.verify_verification(pres_ex_id)
+        print("verification result --->", result)
+
 
     @stopwatch
     def verifier_connectionless_request(self):

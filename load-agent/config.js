@@ -28,6 +28,14 @@ if (process.env.LEDGER == "bcovrin") {
     isProduction: false,
     connectOnStartup: true,
   };
+} else if (process.env.LEDGER == "sovrin") {
+  ledger = {
+    genesisPath: "./networks/sovrin-main.txn",
+    id: "SovrinMainNet",
+    indyNamespace: 'did:indy:sovrin:main',
+    isProduction: true,
+    connectOnStartup: true,
+  };
 }
 
 exports.mediation_url = process.env.MEDIATION_URL;
